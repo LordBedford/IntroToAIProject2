@@ -1,6 +1,6 @@
 from MapMaker import *
-from astarSearch import *
-from MapCreator import *
+#from astarSearch import *
+#from MapCreator import *
 import time
 import statistics
 

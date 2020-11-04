@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 import numpy as np
 import MapCreator
-import astarSearch
+#import astarSearch
 import os
 
 
