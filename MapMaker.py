@@ -78,15 +78,25 @@ class MapMaker:
             if self.hand[0] == -1 and self.hand[1] == -1:#activates if your not holding a piece
                 print("You picked up a", self.pieces[selected-1])
                 self.hand = (y,x)
-        elif selected == 0 and self.hand != (-1,-1):
-            if (self.hand[0] - y <= 1 or self.hand[0] - y >= -1)and(self.hand[1] - x <= 1 or self.hand[1] - x >= -1):
-                self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
-                self.map[self.hand[0]][self.hand[1]] = 0
-                self.hand = (-1, -1)
-                self.drawMap()
+        elif (self.hand != (-1,-1)) and ((self.hand[0] - y <= 1 or self.hand[0] - y >= -1)and(self.hand[1] - x <= 1 or self.hand[1] - x >= -1)):
+            if selected == 0:
+                  self.moveOnToGrass(y,x)
+            elif(selected == 7):
+                self.moveOnToPit(y,x)
+    def moveOnToGrass(self,y,x):
+        self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
+        self.map[self.hand[0]][self.hand[1]] = 0
+        self.hand = (-1, -1)
+        self.drawMap()
 
+    def moveOnToPit(self,y,x):
+        self.map[self.hand[0]][self.hand[1]] = 0
+        hand = (-1,-1)
+        self.drawMap()
 
     def rightHandler(self, event):
         print("Right clicked at:", event.x, event.y)
         print("Hand Emptied")
         self.hand = (-1,-1)
+
+
