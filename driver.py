@@ -6,5 +6,6 @@ import statistics
 
 run = True
 map = MapMaker()
+map.startScreen()
 while(run):
    MapMaker.tick(map)
