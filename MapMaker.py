@@ -2,6 +2,7 @@
 
 from tkinter import *
 
+from PIL import ImageTk as itk, Image
 import MapCreator
 import random
 from tkinter import messagebox
@@ -33,6 +34,14 @@ class MapMaker:
         self.turn = 0
         self.gameStarted = FALSE
         self.squareSize = 40
+        hero = Image.open("Hero.PNG")
+        wumpus = Image.open("Wumpus.PNG")
+        wizard = Image.open("Wizard.PNG")
+        hero = hero.resize((self.squareSize, self.squareSize))
+        wumpus = wumpus.resize((self.squareSize, self.squareSize))
+        wizard = wizard.resize((self.squareSize, self.squareSize))
+        self.imgs = [None, (itk.PhotoImage(hero)),(itk.PhotoImage(wumpus)),(itk.PhotoImage(wizard)),(itk.PhotoImage(hero)),
+                     (itk.PhotoImage(wumpus)),(itk.PhotoImage(wizard))]
 
     def tick(self):
         self.window.update()
@@ -63,10 +72,18 @@ class MapMaker:
     def drawMap(self):
         for i in range(len(self.map)):  # i is y
             for j in range(len(self.map[i])):  # j is x
-                (self.c.create_rectangle(self.startX + (self.squareSize * (j)), self.startY + (self.squareSize * (i)),
-                                         self.startX + (self.squareSize * (j + 1)), self.startY + (self.squareSize * (i + 1)),
-                                         fill=self.colors[int(self.map[i][j])],
-                                         outline='black'))
+               # if self.map[i][j] == 0 or self.map[i][j] == 7:
+                    (self.c.create_rectangle(self.startX + (self.squareSize * (j)), self.startY + (self.squareSize * (i)),
+                                             self.startX + (self.squareSize * (j + 1)), self.startY + (self.squareSize * (i + 1)),
+                                             fill=self.colors[int(self.map[i][j])],
+                                             outline='black'))
+               # else:
+                #    lable = Label(self.frame)
+                 #   lable.image = self.imgs[self.map[i][j]]
+                   # lable.config(image = self.imgs[self.map[i][j]])
+                    #lable.place(relx = (self.startX + (self.squareSize * (j))), rely =(self.startY + (self.squareSize * (i))))
+                    #lable.pack()
+
         self.c.pack()
 
     def leftHandler(self, event):
