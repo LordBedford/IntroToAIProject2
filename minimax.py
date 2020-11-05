@@ -15,1163 +15,212 @@ class Node(object):
         if self.depth >= 0:
             eboard = GetBoardEvals(depth, board)
             tempBoard = board
-            for i in depth - 1:
-                for j in depth - 1:
+            validChildren = []
+            for i in range (depth):
+                for j in range (depth):
                     # AI agent's turn (4->2, 6->1, 5->3)
                     if(playerNum < 0):
-                        if(board[i][j] == 4):
-                            # 1/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and board[i+1][j] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j] == 1):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
+                        if(board[i][j] == 4 or board[i][j] == 5 or board[i][j] == 6):
+                            neighbors = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1), (i + 1, j + 1), (i + 1, j - 1),
+                                         (i - 1, j + 1),
+                                         (i - 1, j - 1)]
+                            for next in neighbors:
+                                # Checks to see if neighbors are within Bounds
+                                if next[0] < 0 or \
+                                        next[1] < 0 or \
+                                        next[0] >= depth or \
+                                        next[1] >= depth:
+                                    continue
+                                validChildren.append(next)
+                            if(board[i][j] == 4):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Heros can't kill mage
+                                    if board[next[0]][next[1]] == 3:
+                                        continue
+                                    # Hero kills wumpus
+                                    if board[next[0]][next[1]] == 2:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 4
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j] == 2):
-                                    tempBoard[i + 1][j] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 1):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 2):
-                                    tempBoard[i + 1][j-1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Heros Tie and kill each other
+                                    if board[next[0]][next[1]] == 1:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i + 1][j-1] = 4
+                                    tempBoard[next[0]][next[1]] = 4
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
 
 
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 1):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
+                            if (board[i][j] == 5):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Wumpus can't kill hero
+                                    if board[next[0]][next[1]] == 1:
+                                        continue
+                                    # Wumps kills mage
+                                    if board[next[0]][next[1]] == 3:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 5
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 2):
-                                    tempBoard[i + 1][j+1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Wumpus Tie and kill each other
+                                    if board[next[0]][next[1]] == 2:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i + 1][j+1] = 4
+                                    tempBoard[next[0]][next[1]] = 5
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
 
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 1):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
 
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 2):
-                                    tempBoard[i][j+1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                            if (board[i][j] == 6):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Mage can't kill wumpus
+                                    if board[next[0]][next[1]] == 2:
+                                        continue
+                                    # Mage kills hero
+                                    if board[next[0]][next[1]] == 1:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 6
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
+
+                                    # Mages Tie and kill each other
+                                    if board[next[0]][next[1]] == 3:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i][j+1] = 4
+                                    tempBoard[next[0]][next[1]] = 6
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
 
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 1):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 2):
-                                    tempBoard[i][j-1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 1):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 2):
-                                    tempBoard[i-1][j+1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 1):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 2):
-                                    tempBoard[i-1][j-1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 3):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 1):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 2):
-                                    tempBoard[i-1][j] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 4
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                        # Wizard
-                        elif(board[i][j] == 6):
-                            # 1/8 Right limit good and not wizard vs wumpus
-                            if(i+1 < depth and board[i+1][j] != 2):
-                                tempBoard = board
-                                # mage vs mage, both spots set to grass
-                                if(board[i+1][j] == 3):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # mage vs hero, mage wins
-                                elif(board[i+1][j] == 1):
-                                    tempBoard[i + 1][j] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 3):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 1):
-                                    tempBoard[i + 1][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 3):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 1):
-                                    tempBoard[i + 1][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 3):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 1):
-                                    tempBoard[i][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 3):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 1):
-                                    tempBoard[i][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 3):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 1):
-                                    tempBoard[i-1][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 3):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 1):
-                                    tempBoard[i-1][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 2):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 3):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 1):
-                                    tempBoard[i-1][j] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-
-                        # Wumpus
-                        elif(board[i][j] == 5):
-                            # 1/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and board[i+1][j] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j] == 2):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j] == 3):
-                                    tempBoard[i + 1][j] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 2):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 3):
-                                    tempBoard[i + 1][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 2):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 3):
-                                    tempBoard[i + 1][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 2):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 3):
-                                    tempBoard[i][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 2):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 3):
-                                    tempBoard[i][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 2):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 3):
-                                    tempBoard[i-1][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 2):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 3):
-                                    tempBoard[i-1][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 1):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 2):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 3):
-                                    tempBoard[i-1][j] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-
-                    # Player's turn (1->5, 3->4, 2->6)
+                    # Player's turn
                     elif(playerNum > 0):
-                        if(board[i][j] == 1):
-                            # 1/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and board[i+1][j] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j] == 4):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
+                        if(board[i][j] == 1 or board[i][j] == 2 or board[i][j] == 3):
+                            neighbors = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1), (i + 1, j + 1), (i + 1, j - 1),
+                                         (i - 1, j + 1),
+                                         (i - 1, j - 1)]
+                            for next in neighbors:
+                                # Checks to see if neighbors are within Bounds
+                                if next[0] < 0 or \
+                                        next[1] < 0 or \
+                                        next[0] >= depth or \
+                                        next[1] >= depth:
+                                    continue
+                                validChildren.append(next)
+                            if(board[i][j] == 1):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Heros can't kill mage
+                                    if board[next[0]][next[1]] == 6:
+                                        continue
+                                    # Hero kills wumpus
+                                    if board[next[0]][next[1]] == 5:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 1
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j] == 5):
-                                    tempBoard[i + 1][j] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 4):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 5):
-                                    tempBoard[i + 1][j-1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Heros Tie and kill each other
+                                    if board[next[0]][next[1]] == 4:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i + 1][j-1] = 1
+                                    tempBoard[next[0]][next[1]] = 1
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
 
+                            if (board[i][j] == 2):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Wumpus can't kill hero
+                                    if board[next[0]][next[1]] == 4:
+                                        continue
+                                    # Wumps kills mage
+                                    if board[next[0]][next[1]] == 6:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 2
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 4):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 5):
-                                    tempBoard[i + 1][j+1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Wumpus Tie and kill each other
+                                    if board[next[0]][next[1]] == 5:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i + 1][j+1] = 1
+                                    tempBoard[next[0]][next[1]] = 2
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
 
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 4):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
+                            if (board[i][j] == 3):
+                                # Checks to see if neighbors can kill units
+                                for next in validChildren:
+                                    # Mage can't kill wumpus
+                                    if board[next[0]][next[1]] == 5:
+                                        continue
+                                    # Mage kills hero
+                                    if board[next[0]][next[1]] == 4:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 3
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 5):
-                                    tempBoard[i][j+1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Mages Tie and kill each other
+                                    if board[next[0]][next[1]] == 6:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 0
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                                 # Open Space
                                 else:
-                                    tempBoard[i][j+1] = 1
+                                    tempBoard[next[0]][next[1]] = 3
                                     tempBoard[i][j] = 0
                                     self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                               self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 4):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 5):
-                                    tempBoard[i][j-1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 4):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 5):
-                                    tempBoard[i-1][j+1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 4):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 5):
-                                    tempBoard[i-1][j-1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 6):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 4):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 5):
-                                    tempBoard[i-1][j] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                        # Wizard
-                        elif(board[i][j] == 3):
-                            # 1/8 Right limit good and not wizard vs wumpus
-                            if(i+1 < depth and board[i+1][j] != 5):
-                                tempBoard = board
-                                # mage vs mage, both spots set to grass
-                                if(board[i+1][j] == 6):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # mage vs hero, mage wins
-                                elif(board[i+1][j] == 4):
-                                    tempBoard[i + 1][j] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 6):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 4):
-                                    tempBoard[i + 1][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 6):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 4):
-                                    tempBoard[i + 1][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 6):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 4):
-                                    tempBoard[i][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 6):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 4):
-                                    tempBoard[i][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 6):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 4):
-                                    tempBoard[i-1][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 6):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 4):
-                                    tempBoard[i-1][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 5):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 6):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 4):
-                                    tempBoard[i-1][j] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-
-                        # Wumpus
-                        elif(board[i][j] == 2):
-                            # 1/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and board[i+1][j] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j] == 5):
-                                    tempBoard[i+1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j] == 6):
-                                    tempBoard[i + 1][j] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 2/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j-1 > 0 and board[i+1][j-1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j-1] == 5):
-                                    tempBoard[i+1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j-1] == 6):
-                                    tempBoard[i + 1][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 3/8 Right limit good and not hero vs mage
-                            if(i+1 < depth and j+1 < depth and board[i+1][j+1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i+1][j+1] == 5):
-                                    tempBoard[i+1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i+1][j+1] == 6):
-                                    tempBoard[i + 1][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i + 1][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                            # 4/8 Right limit good and not hero vs mage
-                            if(j+1 < depth and board[i][j+1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j+1] == 5):
-                                    tempBoard[i][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j+1] == 6):
-                                    tempBoard[i][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 5/8 Right limit good and not hero vs mage
-                            if(j-1 > 0 and board[i][j-1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i][j-1] == 5):
-                                    tempBoard[i][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i][j-1] == 6):
-                                    tempBoard[i][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 6/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j+1 < depth and board[i-1][j+1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j+1] == 5):
-                                    tempBoard[i-1][j+1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j+1] == 6):
-                                    tempBoard[i-1][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j+1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 7/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and j-1 > 0 and board[i-1][j-1] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j-1] == 5):
-                                    tempBoard[i-1][j-1] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j-1] == 6):
-                                    tempBoard[i-1][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i - 1][j-1] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
-                            # 8/8 Right limit good and not hero vs mage
-                            if(i-1 > 0 and board[i-1][j] != 4):
-                                tempBoard = board
-                                # Hero vs hero, both spots set to grass
-                                if(board[i-1][j] == 5):
-                                    tempBoard[i-1][j] = 0
-                                    tempBoard[i][j] = 0
-                                    self.children.append( Node( self.depth - 1, -self.playerNum, tempBoard, self.Evaluate(board, eboard, playerNum)))
-
-                                # Hero vs wumpus, hero wins
-                                elif(board[i-1][j] == 6):
-                                    tempBoard[i-1][j] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-                                # Open Space
-                                else:
-                                    tempBoard[i -1][j] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
-
-
 
 # calculates current value of board based on number of pieces and center board positioning
 def Evaluate(board, eboard, playerNum):
@@ -1180,8 +229,8 @@ def Evaluate(board, eboard, playerNum):
     aiBoardValue = 0
     playerBoardValue = 0
     value = 0
-    for i in depth - 1:
-        for j in depth - 1:
+    for i in len(board) - 1:
+        for j in len(board) - 1:
             if (board[i][j] == 1 or board[i][j] == 2 or board[i][j] == 3):
                 aiCount = aiCount + 10
                 aiBoardValue = eboard[i][j]
@@ -1252,3 +301,9 @@ def MiniMax(node, depth, playerNum, a, b):
             if (b <= a):
                 break
             return bestValue
+
+
+def GetNextMove(board, depth, playerNum):
+    cur = Node(depth, playerNum, board, 0)
+    val = MiniMax(cur, depth, playerNum, None, None)
+    return cur.board
