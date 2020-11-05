@@ -4,6 +4,11 @@ import random
 
 #Function to generate a map
 def mapGen(d):
+    #Check if d is a multiple of 3
+    if d % 3 != 0:
+        print("d is not a multiple of 3. Please try again using a d value that is a multiple of 3")
+        return
+
     #Initiate map with all 1 chars for regular cell
     map = [[1 for i in range(d)] for j in range(d)]
 
@@ -11,13 +16,13 @@ def mapGen(d):
     tracker = 0
     for i in range(len(map[0])):
         if tracker == 0:
-            map[0][i] = 2
+            map[0][i] = 12
             tracker = 1
         elif tracker == 1:
-            map[0][i] = 3
+            map[0][i] = 13
             tracker = 2
         else:
-            map[0][i] = 4
+            map[0][i] = 14
             tracker = 0
 
     #Add characters to bottom row
@@ -50,4 +55,4 @@ def mapGen(d):
         placed_pits = 0
     return map
 
-print(mapGen(9))
+#print(mapGen(9))
