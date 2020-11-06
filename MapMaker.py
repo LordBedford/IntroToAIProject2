@@ -2,6 +2,7 @@
 
 from tkinter import *
 
+import testminimax
 from PIL import ImageTk as itk, Image
 import MapCreator
 import random
@@ -34,6 +35,7 @@ class MapMaker:
         self.turn = 0
         self.gameStarted = FALSE
         self.squareSize = 40
+        self.turn = 0
         hero = Image.open("Hero.PNG")
         wumpus = Image.open("Wumpus.PNG")
         wizard = Image.open("Wizard.PNG")
@@ -87,7 +89,7 @@ class MapMaker:
         self.c.pack()
 
     def leftHandler(self, event):
-        if self.gameStarted:
+        if self.gameStarted and self.turn == 0:
             print("Left clicked at:", event.x, event.y)
             y = int((event.y - self.startY - ((event.y - self.startY) % self.squareSize)) / self.squareSize)
             x = int((event.x - self.startX - ((event.x -self.startX) % self.squareSize)) / self.squareSize)
@@ -107,6 +109,8 @@ class MapMaker:
                         self.moveOnToPit(y, x)
                     elif selected == 4 or selected == 5 or selected == 6:
                         self.combat(y, x)
+                    self.turn = 1
+                    self.aiHandler()
                 else:
                     print("Failure")
 
@@ -183,3 +187,13 @@ class MapMaker:
         print("Right clicked at:", event.x, event.y)
         print("Hand Emptied")
         self.hand = (-1, -1)
+
+    def aiHandler(self):
+        temp= []
+        temp = list(testminimax.takeTurn(self.map))
+        for i in range(len(self.map)):
+            for j in range(len(self.map[i])):
+                self.map[i][j] = temp[1][0][0][i][j]
+        print("Making move valued at:", temp[0])
+        self.turn = 0
+        self.drawMap()
