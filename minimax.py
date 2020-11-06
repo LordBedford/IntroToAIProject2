@@ -100,13 +100,13 @@ class Node(object):
                                         self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                                   self.Evaluate(board, eboard, playerNum), dim))
 
-                                # Open Space
-                                else:
-                                    tempBoard = board
-                                    tempBoard[next[0]][next[1]] = 5
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum), dim))
+                                    # Open Space
+                                    else:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 5
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum), dim))
 
 
                             if (board[i][j] == 6):
@@ -131,13 +131,13 @@ class Node(object):
                                         self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                                   self.Evaluate(board, eboard, playerNum), dim))
 
-                                # Open Space
-                                else:
-                                    tempBoard = board
-                                    tempBoard[next[0]][next[1]] = 6
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum), dim))
+                                    # Open Space
+                                    else:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 6
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum), dim))
 
                     # Player's turn
                     elif(playerNum > 0):
@@ -175,13 +175,13 @@ class Node(object):
                                         self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                                   self.Evaluate(board, eboard, playerNum), dim))
 
-                                # Open Space
-                                else:
-                                    tempBoard = board
-                                    tempBoard[next[0]][next[1]] = 1
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum)))
+                                    # Open Space
+                                    else:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 1
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum)))
 
                             if (board[i][j] == 2):
                                 # Checks to see if neighbors can kill units
@@ -205,13 +205,13 @@ class Node(object):
                                         self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                                   self.Evaluate(board, eboard, playerNum), dim))
 
-                                # Open Space
-                                else:
-                                    tempBoard = board
-                                    tempBoard[next[0]][next[1]] = 2
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum), dim))
+                                    # Open Space
+                                    else:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 2
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum), dim))
 
                             if (board[i][j] == 3):
                                 # Checks to see if neighbors can kill units
@@ -235,13 +235,13 @@ class Node(object):
                                         self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
                                                                   self.Evaluate(board, eboard, playerNum), dim))
 
-                                # Open Space
-                                else:
-                                    tempBoard = board
-                                    tempBoard[next[0]][next[1]] = 3
-                                    tempBoard[i][j] = 0
-                                    self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
-                                                              self.Evaluate(board, eboard, playerNum), dim))
+                                    # Open Space
+                                    else:
+                                        tempBoard = board
+                                        tempBoard[next[0]][next[1]] = 3
+                                        tempBoard[i][j] = 0
+                                        self.children.append(Node(self.depth - 1, -self.playerNum, tempBoard,
+                                                                  self.Evaluate(board, eboard, playerNum), dim))
 
 
     # calculates current value of board based on number of pieces and center board positioning
