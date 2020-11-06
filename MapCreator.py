@@ -54,5 +54,4 @@ def mapGen(d):
                 j = 0
         placed_pits = 0
     return map
-
-print(mapGen(9))
+#print(mapGen(9))
