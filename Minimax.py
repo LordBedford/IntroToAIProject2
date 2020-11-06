@@ -10,13 +10,13 @@ class Node(object):
         self.CreateChildren(board)
 
 
-    def CreateChildren(board):
+    def CreateChildren(self, board):
         if self.depth >= 0:
             for i in range(1, 3):
                 v = self.i_sticksRemaining = i
                 self.children.append( Node( self.depth - 1, -self.playerNum, v, self.RealVal(v)))
 
-    def RealVal(selfself, value):
+    def RealVal(self, value):
         if(value == 0):
             return maxsize * self.playerNum
         elif(value < 0):
@@ -32,7 +32,7 @@ class Node(object):
         return board
 
 
-    def MiniMax(node, depth, playerNum, a, b):
+    def MiniMax(self, node, depth, playerNum, a, b):
         if(depth == 0) or (abs(node.value) == maxsize):
             return node.value
         if(playerNum > 0):
@@ -45,6 +45,7 @@ class Node(object):
                 a = max(a, bestValue)
                 if(a >= b):
                     break
+            return bestValue
         else:
             bestValue = maxsize * playerNum
             for i in range(len(node.children)):
@@ -55,5 +56,4 @@ class Node(object):
                 b = min(b, bestValue)
                 if(b <= a):
                     break
-
-        return bestValue
+            return bestValue
