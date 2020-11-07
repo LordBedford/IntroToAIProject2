@@ -318,7 +318,7 @@ def MiniMax(node, depth, playerNum, a, b):
             a = max(a, bestValue)
             if(a >= b):
                 break
-            return bestValue
+        return bestValue
      else:
         bestValue = maxsize * playerNum
         for i in range(len(node.children)):
@@ -332,7 +332,6 @@ def MiniMax(node, depth, playerNum, a, b):
             b = min(b, bestValue)
             if (b <= a):
                 break
-            return bestValue
         return bestValue
 
 def GetNextMove(board, depth, playerNum):
