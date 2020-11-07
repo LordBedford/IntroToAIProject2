@@ -70,8 +70,8 @@ def takeTurn(map):
         for j in range(len(map[i])):
             if map[i][j] == 4 or map[i][j] == 5 or map[i][j] == 6:
                 node = Node(i,j, map[i][j])
-                scores.append(MiniMax(map, node, node, 20, 1, 0, 0))  # This begins the min max search with alpha beta pruning
-    return scores
+                scores.append(MiniMax(map, node, node, 9, 1, 0,0))  # This begins the min max search with alpha beta pruning
+    return (scores)
 
 def MiniMax(map, node, child, depth, playerNum, a, b):
 
@@ -81,28 +81,31 @@ def MiniMax(map, node, child, depth, playerNum, a, b):
 
         neighbors = sort_neighbors(map, node, neighbors_temp)[::-1]
 
-        print(neighbors)
+        if depth == 0:
+            return battle(node,child), (node.x, node.y), (child.x, child.y)
 
-        if depth == 0 or battle(node, child) == 2:
-            return battle(node,child)
         if playerNum > 0:
             val = -maxsize
             for i in range(len(neighbors)):
                 child = Node(neighbors[i][0], neighbors[i][1], map[neighbors[i][0]][neighbors[i][1]])
-                val = max(val, MiniMax(map, node, child, depth - 1, -playerNum, a, b))
+                val = max(val, MiniMax(map, node, child, depth - 1, -playerNum, a, b)[0])
                 a = max(a, val)
                 if a >= b:
                     break
-            return val
+            return val, (node.x, node.y), (child.x, child.y)
         else:
             val = maxsize
             for i in range(len(neighbors)):
                 child = Node(neighbors[i][0], neighbors[i][1], map[neighbors[i][0]][neighbors[i][1]])
-                val = min(val, MiniMax(map, node, child, depth - 1, -playerNum, a, b))
+                val = min(val, MiniMax(map, node, child, depth - 1, -playerNum, a, b)[0])
                 b = min(b, val)
                 if b <= a:
                     break
-            return val
-map = MapCreator.mapGen(3)
-print(map)
+            return val, (node.x, node.y), (child.x, child.y)
+#map = MapCreator.mapGen(9)
+map = [
+    [2,2,2],
+    [0,0,0],
+    [1,0,6]
+]
 print(takeTurn(map))
