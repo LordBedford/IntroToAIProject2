@@ -389,37 +389,36 @@ def GameOver(board):
 
 def MiniMax(node, depth, playerNum, a, b):
     if (depth == 0) or GameOver(node.board):
-        return node.value
+        return node.value, node.board
     if (playerNum > 0):
         bestValue = maxsize
         for i in range(len(node.children)):
             child = node.children[i]
-            bestValue = min(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
+            bestValue = min(bestValue, MiniMax(child, depth - 1, -playerNum, a, b)[0])
             a = min(a, bestValue)
             if (a <= b):
                 break
-        return bestValue
+        return bestValue, child.board
     else:
         bestValue = -maxsize
         for i in range(len(node.children)):
             child = node.children[i]
-            bestValue = max(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
+            bestValue = max(bestValue, MiniMax(child, depth - 1, -playerNum, a, b)[0])
             b = max(b, bestValue)
             if (b >= a):
                 break
-        return bestValue
+        return bestValue, child.board
 
 
 
 def GetNextMove(board, depth, playerNum):
     cur = Node(depth, playerNum, board, 0)
-    print("ALL CHILDREN BOARDS")
-    print(len(cur.children))
-    for i in range(len(cur.children)):
-        print(cur.children[i].board, cur.children[i].value)
+    #print("ALL CHILDREN BOARDS")
+    #print(len(cur.children))
+    #for i in range(len(cur.children)):
+        #print(cur.children[i].board, cur.children[i].value)
 
-    val = MiniMax(cur, depth, playerNum, 0, 0)
+    val, nextMove = MiniMax(cur, depth, playerNum, 0, 0)
+    print(nextMove)
 
-
-    print(val)
-    return cur.board
+    return nextMove
