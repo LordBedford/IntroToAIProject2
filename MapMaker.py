@@ -3,6 +3,7 @@
 from tkinter import *
 
 import testminimax
+import minimax
 from PIL import ImageTk as itk, Image
 import MapCreator
 import random
@@ -139,7 +140,6 @@ class MapMaker:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
-                print("Hero kills wumpus")
                 self.drawMap()
             elif self.map[y][x] == 6:
                 self.map[self.hand[0]][self.hand[1]] = 0
@@ -193,10 +193,10 @@ class MapMaker:
 
     def aiHandler(self):
         temp= []
-        temp = list(testminimax.takeTurn(self.map))
+        temp = list(minimax.GetNextMove(self.map,3,1))
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
-                self.map[i][j] = temp[1][i][j]
+                self.map[i][j] = temp[i][j]
         print("Making move valued at:", temp[0])
         self.turn = 0
         self.drawMap()
