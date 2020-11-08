@@ -44,7 +44,7 @@ def CreateChildren(self, depth, board, playerNum):
 
 
                                 # Heros can't kill mage
-                                if board[next[0]][next[1]] == 3:
+                                if board[next[0]][next[1]] == 3 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Hero kills wumpus
                                 if board[next[0]][next[1]] == 2:
@@ -92,7 +92,7 @@ def CreateChildren(self, depth, board, playerNum):
                                 otherVal = tempBoard[i][j]
 
                                 # Wumpus can't kill hero
-                                if board[next[0]][next[1]] == 1:
+                                if board[next[0]][next[1]] == 1 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Wumps kills mage
                                 if board[next[0]][next[1]] == 3:
@@ -136,7 +136,7 @@ def CreateChildren(self, depth, board, playerNum):
                                 otherVal = tempBoard[i][j]
 
                                 # Mage can't kill wumpus
-                                if board[next[0]][next[1]] == 2:
+                                if board[next[0]][next[1]] == 2 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Mage kills hero
                                 if board[next[0]][next[1]] == 1:
@@ -193,7 +193,7 @@ def CreateChildren(self, depth, board, playerNum):
                                 otherVal = tempBoard[i][j]
 
                                 # Heros can't kill mage
-                                if board[next[0]][next[1]] == 6:
+                                if board[next[0]][next[1]] == 6 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Hero kills wumpus
                                 if board[next[0]][next[1]] == 5:
@@ -236,7 +236,7 @@ def CreateChildren(self, depth, board, playerNum):
                                 otherVal = tempBoard[i][j]
 
                                 # Wumpus can't kill hero
-                                if board[next[0]][next[1]] == 4:
+                                if board[next[0]][next[1]] == 4 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Wumps kills mage
                                 if board[next[0]][next[1]] == 6:
@@ -279,7 +279,7 @@ def CreateChildren(self, depth, board, playerNum):
                                 otherVal = tempBoard[i][j]
 
                                 # Mage can't kill wumpus
-                                if board[next[0]][next[1]] == 5:
+                                if board[next[0]][next[1]] == 5 or board[next[0]][next[1]] == 7:
                                     continue
                                 # Mage kills hero
                                 if board[next[0]][next[1]] == 4:
@@ -386,6 +386,7 @@ def GameOver(board):
     if(aiCount == 0 or playerCount == 0):
         return True
     return False
+
 
 def MiniMax(node, depth, playerNum, a, b):
     if (depth == 0) or GameOver(node.board):
