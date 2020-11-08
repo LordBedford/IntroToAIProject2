@@ -395,18 +395,18 @@ def MiniMax(node, depth, playerNum, a, b):
         for i in range(len(node.children)):
             child = node.children[i]
             bestValue = min(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
-            #a = min(a, bestValue)
-            #if (a <= b):
-                #break
+            a = min(a, bestValue)
+            if (a <= b):
+                break
         return bestValue
     else:
         bestValue = -maxsize
         for i in range(len(node.children)):
             child = node.children[i]
             bestValue = max(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
-            #b = max(b, bestValue)
-            #if (b >= a):
-                #break
+            b = max(b, bestValue)
+            if (b >= a):
+                break
         return bestValue
 
 
