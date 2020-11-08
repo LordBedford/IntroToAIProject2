@@ -173,15 +173,14 @@ class MapMaker:
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 if (self.map[i][j] == 1) or (self.map[i][j] == 2) or (self.map[i][j] == 3):
-                    print("YEETS ASDFHHFHH",count[0])
                     count = (count[0] + 1, count[1])
                 elif (self.map[i][j] == 4) or (self.map[i][j] == 5) or (self.map[i][j] == 6):
                     count = (count[0], count[1]+1)
         if count[0] != 0 and count[1] == 0:
-            print("Human Player Wins!")
+            print("AI Player Wins!")
             self.window.destroy()
         elif count[0] == 0 and count[1] != 0:
-            print("AI Player Wins!")
+            print("HUMAN Player Wins!")
             self.window.destroy()
         elif count[0] == 0 and count[1] == 0:
             print("TIE!")
