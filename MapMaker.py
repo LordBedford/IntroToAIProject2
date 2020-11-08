@@ -52,9 +52,11 @@ class MapMaker:
         self.frame = Frame(self.window, width=1000, height=1000)
         self.frame.pack()
         self.startButton = Button(self.frame, text='START GAME!', width=25, command=self.gameSetup)
-        self.startButton.place(x=500, y=500)
+        self.startButton.place(x=400, y=500)
         self.gameSize = Text(self.frame, height=1, width=25)
-        self.gameSize.place(x=500, y=600)
+        self.gameSize.place(x=400, y=700)
+        label = Label(self.frame, text = "Enter in the Game Size then hit start!")
+        label.place(x = 400, y = 650)
 
     def gameSetup(self):
         tempSize = self.gameSize.get("1.0","end")
@@ -68,6 +70,7 @@ class MapMaker:
             self.map = MapCreator.mapGen(self.size)  # Replace with map generator
             self.drawMap()
             self.gameStarted = TRUE
+
         else:
             print("Please enter a valid number")
 
@@ -193,7 +196,7 @@ class MapMaker:
         temp = list(testminimax.takeTurn(self.map))
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
-                self.map[i][j] = temp[1][0][0][i][j]
+                self.map[i][j] = temp[1][i][j]
         print("Making move valued at:", temp[0])
         self.turn = 0
         self.drawMap()
