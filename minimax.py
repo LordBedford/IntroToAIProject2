@@ -1,6 +1,6 @@
 # Brian Tran
 from sys import maxsize
-import numpy as np
+import copy
 
 class Node(object):
     def __init__(self, depth, playerNum, board, value):
@@ -13,12 +13,7 @@ class Node(object):
 
 def CreateChildren(self, depth, board, playerNum):
     children = []
-    #print("INITIAL BOARD")
-    #print(board)
-    #print("DEPTH")
-    #print(depth)
-    #print("PLAYER NUM:")
-    #print(playerNum)
+    copyList = []
     if depth > 0:
         eboard = GetBoardEvals(board)
         tempBoard = board
@@ -43,53 +38,44 @@ def CreateChildren(self, depth, board, playerNum):
                             tempBoard = board
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
-                                listToAppend = []
+
                                 oldVal = tempBoard[next[0]][next[1]]
                                 otherVal = tempBoard[i][j]
 
 
                                 # Heros can't kill mage
                                 if board[next[0]][next[1]] == 3:
-                                    print("MAGE FOUND")
                                     continue
                                 # Hero kills wumpus
                                 if board[next[0]][next[1]] == 2:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 4
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Heros Tie and kill each other
                                 if board[next[0]][next[1]] == 1:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 4
                                     tempBoard[i][j] = 0
-                                    newVal = 4
 
-                                    copy = tempBoard
-                                    listToAppend.append(copy)
-                                    curVal = Evaluate(copy, eboard, playerNum)
-
-                                    cur = Node(depth - 1, -playerNum, copy, curVal)
-                                    print("BOARD TO APPEND")
-                                    print(cur.board)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
                                     children.append(cur)
-                                    #print("JUST ADDED")
-                                    #print(self.children[0].board)
-
-                                    #print("CUR BOARD")
-                                    #print(self.children[0].board)
 
                                 # I NEED TO RESET THE BOARD BACK BUT IT ADDS THE RESETTED BOARD TO THE LIST???
 
@@ -101,6 +87,10 @@ def CreateChildren(self, depth, board, playerNum):
                         if (board[i][j] == 5):
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
+
+                                oldVal = tempBoard[next[0]][next[1]]
+                                otherVal = tempBoard[i][j]
+
                                 # Wumpus can't kill hero
                                 if board[next[0]][next[1]] == 1:
                                     continue
@@ -109,31 +99,42 @@ def CreateChildren(self, depth, board, playerNum):
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 5
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Wumpus Tie and kill each other
                                 if board[next[0]][next[1]] == 2:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 5
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
+                                board[next[0]][next[1]] = oldVal
+                                board[i][j] = otherVal
 
                         if (board[i][j] == 6):
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
+
+                                oldVal = tempBoard[next[0]][next[1]]
+                                otherVal = tempBoard[i][j]
+
                                 # Mage can't kill wumpus
                                 if board[next[0]][next[1]] == 2:
                                     continue
@@ -142,31 +143,36 @@ def CreateChildren(self, depth, board, playerNum):
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 6
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Mages Tie and kill each other
                                 if board[next[0]][next[1]] == 3:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 6
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
+                                board[next[0]][next[1]] = oldVal
+                                board[i][j] = otherVal
 
                 # Player's turn
                 elif (playerNum > 0):
-                    print("PLAYERS TURN")
                     if (board[i][j] == 1 or board[i][j] == 2 or board[i][j] == 3):
                         neighbors = [(i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1), (i + 1, j + 1), (i + 1, j - 1),
                                      (i - 1, j + 1),
@@ -182,6 +188,10 @@ def CreateChildren(self, depth, board, playerNum):
                         if (board[i][j] == 1):
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
+
+                                oldVal = tempBoard[next[0]][next[1]]
+                                otherVal = tempBoard[i][j]
+
                                 # Heros can't kill mage
                                 if board[next[0]][next[1]] == 6:
                                     continue
@@ -190,31 +200,41 @@ def CreateChildren(self, depth, board, playerNum):
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 1
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Heros Tie and kill each other
                                 if board[next[0]][next[1]] == 4:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 1
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
+                                board[next[0]][next[1]] = oldVal
+                                board[i][j] = otherVal
 
                         if (board[i][j] == 2):
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
+
+                                oldVal = tempBoard[next[0]][next[1]]
+                                otherVal = tempBoard[i][j]
+
                                 # Wumpus can't kill hero
                                 if board[next[0]][next[1]] == 4:
                                     continue
@@ -223,31 +243,41 @@ def CreateChildren(self, depth, board, playerNum):
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 2
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Wumpus Tie and kill each other
                                 if board[next[0]][next[1]] == 5:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 2
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
+                                board[next[0]][next[1]] = oldVal
+                                board[i][j] = otherVal
 
                         if (board[i][j] == 3):
                             # Checks to see if neighbors can kill units
                             for next in validChildren:
+
+                                oldVal = tempBoard[next[0]][next[1]]
+                                otherVal = tempBoard[i][j]
+
                                 # Mage can't kill wumpus
                                 if board[next[0]][next[1]] == 5:
                                     continue
@@ -256,27 +286,33 @@ def CreateChildren(self, depth, board, playerNum):
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 3
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Mages Tie and kill each other
                                 if board[next[0]][next[1]] == 6:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 0
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
 
                                 # Open Space
                                 else:
                                     tempBoard = board
                                     tempBoard[next[0]][next[1]] = 3
                                     tempBoard[i][j] = 0
-                                    cur = Node(depth - 1, -playerNum, tempBoard,
-                                               Evaluate(tempBoard, eboard, playerNum))
-                                    self.children.append(cur)
+                                    copyList = copy.deepcopy(tempBoard)
+                                    curVal = Evaluate(copyList, eboard, playerNum)
+                                    cur = Node(depth - 1, -playerNum, copyList, curVal)
+                                    children.append(cur)
+
+                                board[next[0]][next[1]] = oldVal
+                                board[i][j] = otherVal
 
     #print("ALL CHILDREN BOARDS")
     #print(len(children))
@@ -284,6 +320,7 @@ def CreateChildren(self, depth, board, playerNum):
         #print(children[i].board)
 
     return children
+
 
 def Evaluate(board, eboard, playerNum):
     aiCount = 0
@@ -337,41 +374,41 @@ def GetBoardEvals(board):
                 eboard[i][j] = -10
     return eboard
 
+def GameOver(board):
+    aiCount = 0
+    playerCount = 0
+    for i in range(len(board)):
+        for j in range(len(board)):
+            if(board[i][j] == 1 or board[i][j] == 2 or board[i][j] == 3):
+                playerCount = playerCount + 1
+            if (board[i][j] == 4 or board[i][j] == 5 or board[i][j] == 6):
+                aiCount = aiCount + 1
+    if(aiCount == 0 or playerCount == 0):
+        return True
+    return False
 
 def MiniMax(node, depth, playerNum, a, b):
-    print("value")
-    print(abs(node.value))
-    if (depth == 0) or (abs(node.value) == maxsize):
-        return node.value * playerNum
+    if (depth == 0) or GameOver(node.board):
+        return node.value
     if (playerNum > 0):
-        bestValue = node.value * playerNum
+        bestValue = maxsize
         for i in range(len(node.children)):
             child = node.children[i]
-            print("kid board")
-            print(child.board)
-            val = MiniMax(child, depth - 1, -playerNum, a, b)
-            x = abs(maxsize * playerNum - val)
-            y = abs(maxsize * playerNum - bestValue)
-            print("past1")
-            if (x < y):
-                bestValue = val
-            a = max(a, bestValue)
-            if (a >= b):
-                break
+            bestValue = min(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
+            #a = min(a, bestValue)
+            #if (a <= b):
+                #break
+        return bestValue
     else:
-        bestValue = node.value * playerNum
+        bestValue = -maxsize
         for i in range(len(node.children)):
             child = node.children[i]
-            val = MiniMax(child, depth - 1, -playerNum, a, b)
-            x = abs(maxsize * playerNum - val)
-            y = abs(maxsize * playerNum - bestValue)
-            print("past")
-            if (x < y):
-                bestValue = val
-            b = min(b, bestValue)
-            if (b <= a):
-                break
-    return bestValue
+            bestValue = max(bestValue, MiniMax(child, depth - 1, -playerNum, a, b))
+            #b = max(b, bestValue)
+            #if (b >= a):
+                #break
+        return bestValue
+
 
 
 def GetNextMove(board, depth, playerNum):
@@ -379,9 +416,10 @@ def GetNextMove(board, depth, playerNum):
     print("ALL CHILDREN BOARDS")
     print(len(cur.children))
     for i in range(len(cur.children)):
-        print(cur.children[i].board)
+        print(cur.children[i].board, cur.children[i].value)
 
-    # val = MiniMax(cur, depth, playerNum, 0, 0)
+    val = MiniMax(cur, depth, playerNum, 0, 0)
 
-    # print(val)
+
+    print(val)
     return cur.board
