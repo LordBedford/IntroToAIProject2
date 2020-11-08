@@ -57,47 +57,6 @@ def GetBoardEvals(board):
                 eboard[i][j] = -10
     return eboard
 
-def battle(node, child):
-    if node.value == 4:
-        if child.value == 0:
-            return 1
-        elif child.value == 1:
-            return 0
-        elif child.value == 2:
-            return 2
-        elif child.value == 3:
-            return -1
-        elif child.value == 7:
-            return -1
-        else:
-            return -2
-    elif node.value == 5:
-        if child.value == 0:
-            return 1
-        elif child.value == 1:
-            return -1
-        elif child.value == 2:
-            return 0
-        elif child.value == 3:
-            return 2
-        elif child.value == 7:
-            return -1
-        else:
-            return -2
-    else:
-        if child.value == 0:
-            return 1
-        elif child.value == 1:
-            return 2
-        elif child.value == 2:
-            return -1
-        elif child.value == 3:
-            return 0
-        elif child.value == 7:
-            return -1
-        else:
-            return -2
-
 def sort_neighbors(map, node, temp):
     list = []
     for i in range(len(temp)):
@@ -122,63 +81,167 @@ def sort_neighbors(map, node, temp):
 #                 scores.append(MiniMax(map, node, node, 9, 1, 0, 0))  # This begins the min max search with alpha beta pruning
 #     return (scores)
 
+def makeMove(node, i,j, k,f):
+    if node.board[k][f] == 0:
+        node.board[k][f] = node.board[i][j]
+        node.board[i][j] = 0
+        return node.board
+    if node.board[k][f] == 7:
+        node.board[i][j] == 0
+        return node.board
+    #Player Hero
+    if node.board[i][j] == 1:
+        if node.board[k][f] == 5:
+            node.board[i][j] = 0
+            node.board[k][f] = 1
+            return node.board
+        elif node.board[k][f] == 4:
+            node.board[i][j] == 0
+            node.board[k][f] == 0
+            return node.board
+        elif node.board == 6:
+            node.board[i][j] == 0
+            node.board[k][f] == 6
+            return node.board
+    #Player Wumpus
+    if node.board[i][j] == 2:
+        if node.board[k][f] == 5:
+            node.board[i][j] = 0
+            node.board[k][f] = 0
+            return node.board
+        elif node.board[k][f] == 4:
+            node.board[i][j] == 0
+            node.board[k][f] == 4
+            return node.board
+        elif node.board == 6:
+            node.board[i][j] == 2
+            node.board[k][f] == 0
+            return node.board
+    #Player Mage
+    if node.board[i][j] == 3:
+        if node.board[k][f] == 5:
+            node.board[i][j] = 0
+            node.board[k][f] = 5
+            return node.board
+        elif node.board[k][f] == 4:
+            node.board[i][j] == 3
+            node.board[k][f] == 0
+            return node.board
+        elif node.board == 6:
+            node.board[i][j] == 0
+            node.board[k][f] == 0
+            return node.board
+    #AI Hero
+    if node.board[i][j] == 4:
+        if node.board[k][f] == 1:
+            node.board[i][j] = 0
+            node.board[k][f] = 0
+            return node.board
+        elif node.board[k][f] == 2:
+            node.board[i][j] == 0
+            node.board[k][f] == 4
+            return node.board
+        elif node.board == 3:
+            node.board[i][j] == 0
+            node.board[k][f] == 3
+            return node.board
+    #AI Wumpus
+    if node.board[i][j] == 5:
+        if node.board[k][f] == 1:
+            node.board[i][j] = 0
+            node.board[k][f] = 1
+            return node.board
+        elif node.board[k][f] == 2:
+            node.board[i][j] == 0
+            node.board[k][f] == 0
+            return node.board
+        elif node.board == 3:
+            node.board[i][j] == 0
+            node.board[k][f] == 5
+            return node.board
+    #AI Mage
+    if node.board[i][j] == 6:
+        if node.board[k][f] == 1:
+            node.board[i][j] = 0
+            node.board[k][f] = 6
+            return node.board
+        elif node.board[k][f] == 2:
+            node.board[i][j] == 0
+            node.board[k][f] == 2
+            return node.board
+        elif node.board == 3:
+            node.board[i][j] == 0
+            node.board[k][f] == 0
+            return node.board
+    #return node.board
+
 def MiniMax(node, depth, playerNum, a, b):
 
         #Get coordinates of all neighbors surrouding current node
         neighbors = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, 1), (-1,-1), (1,1), (1,-1)]
-
-        print(Evaluate(node.board, GetBoardEvals(node.board), playerNum))
+        children = []
 
         if depth == 0:
-            return node.value
+            return node.value, node
         if playerNum > 0:
+            
             val = -maxsize
             for i in range(len(node.board)):
                 for j in range(len(node.board[i])):
                     if node.board[i][j] in [4,5,6]:
                         for n in neighbors:
-                            if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[1] < 0 or j+n[1] < 0:
+                            if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[0] < 0 or j+n[1] < 0:
                                 continue
                             child = Node(node.board, node.value)
-                            temp = child.board[i][j]
-                            child.board[i][j] = child.board[i+n[0]][j+n[1]]
-                            child.board[i+n[0]][j+n[1]] = temp
+                            temp_board = node
+                            child.board = makeMove(temp_board, i,j, i+n[0], j+n[1])
+
+                            if child.board == None:
+                                continue
 
                             child.value = Evaluate(child.board, GetBoardEvals(child.board), playerNum)
 
-                            val = max(val, MiniMax(child, depth - 1, -playerNum, a, b))
-                            a = max(a, val)
-                            if a >= b:
-                                break
-            return val 
+                            children.append(child)
+            for x in children:
+                val = max(val, MiniMax(x, depth - 1, -playerNum, a, b)[0])
+                a = max(a, val)
+                if a >= b:
+                    break
+            return val, node
         else:
             val = maxsize
             for i in range(len(node.board)):
                 for j in range(len(node.board[i])):
                     if node.board[i][j] in [1,2,3]:
                         for n in neighbors:
-                            if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[1] < 0 or j+n[1] < 0:
+                            if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[0] < 0 or j+n[1] < 0:
                                 continue
                             child = Node(node.board, -node.value)
-                            temp = child.board[i][j]
-                            child.board[i][j] = child.board[i+n[0]][j+n[1]]
-                            child.board[i+n[0]][j+n[1]] = temp
+                            temp_board = node
+                            child.board = makeMove(temp_board, i,j, i+n[0], j+n[1])
 
-                            child.value = Evaluate(child.board, GetBoardEvals(child.board), playerNum)
+                            if child.board == None:
+                                continue
 
-                            val = min(val, MiniMax(child, depth - 1, -playerNum, a, b))
-                            b = min(a, val)
-                            if b <= a:
-                                break
-            return val
+                            child.value = -Evaluate(child.board, GetBoardEvals(child.board), playerNum)
+
+                            children.append(child)
+            for x in children:
+                val = min(val, MiniMax(x, depth - 1, -playerNum, a, b)[0])
+                b = min(a, val)
+                if b <= a:
+                    break
+            return val, node
 #map = MapCreator.mapGen(9)
 map = [
-    [0,0,0,0,0,0],
+    [0,0,2,0,0,0],
     [0,0,0,0,0,0],
     [0,0,0,0,0,0],
     [0,0,0,0,0,0],
     [7,7,0,0,0,0],
     [1,0,6,0,0,0]
 ]
-node = Node(map, 1)
-print(MiniMax(node, 3, 1, -math.inf, math.inf))
+node = Node(map, 0)
+thing = MiniMax(node, 9, 1, -math.inf, math.inf)
+print(thing[0])
+print(thing[1].board)
