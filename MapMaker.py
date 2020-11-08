@@ -101,9 +101,9 @@ class MapMaker:
                 selected = self.map[y][x]
                 print(x)
                 print(y)
-                if selected == 1 or selected == 2 or selected == 3:
+                if selected == 4 or selected == 5 or selected == 6:
                     if self.hand[0] == -1 and self.hand[1] == -1:  # activates if your not holding a piece
-                        print("You picked up a", self.pieces[selected - 1])
+                        print("You picked up a", self.pieces[selected - 4])
                         self.hand = (y, x)
                 elif (self.hand != (-1, -1)) and ((1 >= self.hand[0] - y >= -1) and (
                         1 >= self.hand[1] - x >= -1)):
@@ -111,9 +111,10 @@ class MapMaker:
                         self.moveOnToGrass(y, x)
                     elif (selected == 7):
                         self.moveOnToPit(y, x)
-                    elif selected == 4 or selected == 5 or selected == 6:
+                    elif selected == 1 or selected == 2 or selected == 3:
                         self.combat(y, x)
                     self.turn = 1
+                    self.drawMap()
                     self.aiHandler()
                 else:
                     print("Failure")
@@ -135,33 +136,33 @@ class MapMaker:
             self.map[self.hand[0]][self.hand[1]] = 0
             self.hand = (-1, -1)
             self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 1:
-            if self.map[y][x] == 5:
+        elif self.map[self.hand[0]][self.hand[1]] == 4:
+            if self.map[y][x] == 2:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-            elif self.map[y][x] == 6:
+            elif self.map[y][x] == 3:
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 2:
-            if self.map[y][x] == 6:
+        elif self.map[self.hand[0]][self.hand[1]] == 5:
+            if self.map[y][x] == 3:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-            elif self.map[y][x] == 4:
+            elif self.map[y][x] == 1:
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 3:
-            if self.map[y][x] == 4:
+        elif self.map[self.hand[0]][self.hand[1]] == 6:
+            if self.map[y][x] == 1:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-            elif self.map[y][x] == 5:
+            elif self.map[y][x] == 2:
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
