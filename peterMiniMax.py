@@ -218,6 +218,6 @@ map = [
     [1,0,6,0,0,0]
 ]
 node = Node(map, Evaluate(map, GetBoardEvals(map),1))
-thing = MiniMax(node, 20, 1, -math.inf, math.inf)
+thing = MiniMax(node, 3, 1, -math.inf, math.inf)
 print(thing[0])
 print(thing[1])
