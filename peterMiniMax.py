@@ -1,6 +1,7 @@
 import math
 from sys import maxsize
 import MapCreator
+from copy import copy,deepcopy
 
 class Node(object):
     def __init__(self, board, value):
@@ -56,30 +57,6 @@ def GetBoardEvals(board):
             if board[i][j] == 7:
                 eboard[i][j] = -10
     return eboard
-
-def sort_neighbors(map, node, temp):
-    list = []
-    for i in range(len(temp)):
-        if temp[i][0] >= len(map) or temp[i][1] >= len(map[0]) or temp[i][0] < 0 or temp[i][1] < 0:
-            continue
-        child = Node(temp[i][0], temp[i][1], map[temp[i][0]][temp[i][1]])
-        list.append( ( (temp[i][0], temp[i][1]), battle(node, child) ) )
-
-    list.sort(key = lambda x: x[1])
-
-    for i in range(len(list)):
-        list[i] = list[i][0]
-
-    return list
-
-# def takeTurn(map):
-#     scores = []
-#     for i in range(len(map)):
-#         for j in range(len(map[i])):
-#             if map[i][j] == 4 or map[i][j] == 5 or map[i][j] == 6:
-#                 node = Node(i,j, map[i][j])
-#                 scores.append(MiniMax(map, node, node, 9, 1, 0, 0))  # This begins the min max search with alpha beta pruning
-#     return (scores)
 
 def makeMove(node, i,j, k,f):
     if node.board[k][f] == 0:
@@ -182,9 +159,8 @@ def MiniMax(node, depth, playerNum, a, b):
         children = []
 
         if depth == 0:
-            return node.value, node
-        if playerNum > 0:
-            
+            return node.value, node.board
+        if playerNum > 0:  
             val = -maxsize
             for i in range(len(node.board)):
                 for j in range(len(node.board[i])):
@@ -192,22 +168,22 @@ def MiniMax(node, depth, playerNum, a, b):
                         for n in neighbors:
                             if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[0] < 0 or j+n[1] < 0:
                                 continue
-                            child = Node(node.board, node.value)
-                            temp_board = node
-                            child.board = makeMove(temp_board, i,j, i+n[0], j+n[1])
-
+                            child = deepcopy(node) 
+                            child.board = makeMove(child, i,j, i+n[0], j+n[1])
                             if child.board == None:
                                 continue
-
                             child.value = Evaluate(child.board, GetBoardEvals(child.board), playerNum)
-
                             children.append(child)
+            mapper = None
             for x in children:
-                val = max(val, MiniMax(x, depth - 1, -playerNum, a, b)[0])
+                temp = MiniMax(x, depth - 1, -playerNum, a, b)
+                if val < temp[0]:
+                    mapper = temp[1]
+                val = max(val, temp[0])
                 a = max(a, val)
                 if a >= b:
                     break
-            return val, node
+            return val, mapper
         else:
             val = maxsize
             for i in range(len(node.board)):
@@ -216,22 +192,22 @@ def MiniMax(node, depth, playerNum, a, b):
                         for n in neighbors:
                             if i+n[0] >= len(node.board) or j+n[1] >= len(node.board[0]) or i+n[0] < 0 or j+n[1] < 0:
                                 continue
-                            child = Node(node.board, -node.value)
-                            temp_board = node
-                            child.board = makeMove(temp_board, i,j, i+n[0], j+n[1])
-
+                            child = deepcopy(node) 
+                            child.board = makeMove(child, i,j, i+n[0], j+n[1])
                             if child.board == None:
                                 continue
-
                             child.value = -Evaluate(child.board, GetBoardEvals(child.board), playerNum)
-
                             children.append(child)
+            mapper = None
             for x in children:
-                val = min(val, MiniMax(x, depth - 1, -playerNum, a, b)[0])
+                temp = MiniMax(x, depth - 1, -playerNum, a, b)
+                if val > temp[0]:
+                    mapper = temp[1]
+                val = min(val, temp[0])
                 b = min(a, val)
                 if b <= a:
                     break
-            return val, node
+            return val, mapper
 #map = MapCreator.mapGen(9)
 map = [
     [0,0,2,0,0,0],
@@ -241,7 +217,7 @@ map = [
     [7,7,0,0,0,0],
     [1,0,6,0,0,0]
 ]
-node = Node(map, 0)
-thing = MiniMax(node, 9, 1, -math.inf, math.inf)
+node = Node(map, Evaluate(map, GetBoardEvals(map),1))
+thing = MiniMax(node, 20, 1, -math.inf, math.inf)
 print(thing[0])
-print(thing[1].board)
+print(thing[1])
