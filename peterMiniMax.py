@@ -178,7 +178,7 @@ def MiniMax(node, depth, playerNum, a, b):
             for x in children:
                 temp = MiniMax(x, depth - 1, -playerNum, a, b)
                 if val < temp[0]:
-                    mapper = temp[1]
+                    mapper = x.board
                 val = max(val, temp[0])
                 a = max(a, val)
                 if a >= b:
@@ -202,7 +202,7 @@ def MiniMax(node, depth, playerNum, a, b):
             for x in children:
                 temp = MiniMax(x, depth - 1, -playerNum, a, b)
                 if val > temp[0]:
-                    mapper = temp[1]
+                    mapper = x.board
                 val = min(val, temp[0])
                 b = min(a, val)
                 if b <= a:
