@@ -8,14 +8,15 @@ def takeTurn(map):
         for j in range(len(map[i])):
             if map[i][j] == 4 or map[i][j] == 5 or map[i][j] == 6:
                 pieces.append((i, j))
-    return findMax(map, pieces, 0, -math.inf, math.inf)  # This begins the min max search with alpha beta pruning
+    return findMax(map,  0, -math.inf, math.inf)  # This begins the min max search with alpha beta pruning
 
 
-def findMax(map, pieces, depth, alpha, beta):
+def findMax(map,  depth, alpha, beta):
+    pieces = getAIPieces(map)
     value = -math.inf
     tempPieces = list(pieces)
     retMap = []
-    value = 0
+    value = -math.inf
     if depth == 3:
         return [Evaluate(map), map]
     else:
@@ -23,64 +24,64 @@ def findMax(map, pieces, depth, alpha, beta):
                 tempMap = []
                 temp =[]
                 if testIfPossible(map, i[0], i[1], i[0] + 1, i[1]):
-                    tempMap.append(simulateMove(map, i[0], i[1], i[0] + 1, i[1]))
-                    if tempMap[0][1]:
-                        tempPieces.remove(i)
-                    temp = list(findMin(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                    tempMap =(simulateMove(map, i[0], i[1], i[0] + 1, i[1]))
+                   
+                    temp =(findMin(tempMap[0],  depth + 1, alpha, beta))
                     if temp[0] > alpha:
                         alpha = temp[0]
                     if temp[0] > value:
                         value = temp[0]
-                        retMap = list(tempMap[0][0])
+                        retMap =(tempMap[0])
                     if alpha > beta:
                         return [value, retMap]
                     tempPieces = list(pieces)
-                tempMap = []
                 if testIfPossible(map, i[0], i[1], i[0] - 1, i[1]):
-                    tempMap.append(simulateMove(map, i[0], i[1], i[0] - 1, i[1]))
-                    if tempMap[0][1]:
-                        tempPieces.remove(i)
-                    temp = findMin(tempMap[0][0], pieces, depth + 1, alpha, beta)
+                    tempMap = []
+                    temp = []
+                    tempMap = simulateMove(map, i[0], i[1], i[0] - 1, i[1])
+                    temp = findMin(tempMap[0],  depth + 1, alpha, beta)
                     if temp[0] > alpha:
                         alpha = temp[0]
                     if temp[0] > value:
                         value = temp[0]
-                        retMap = list(tempMap[0][0])
+                        retMap =(tempMap[0])
                     if alpha > beta:
                         return [value, retMap]
                     tempPieces = list(pieces[0])
-                tempMap = []
                 if testIfPossible(map, i[0], i[1], i[0], i[1] + 1):
-                    tempMap.append(simulateMove(map, i[0], i[1], i[0], i[1] + 1))
-                    if tempMap[0][1]:
-                        tempPieces.remove(i)
-                    temp = list(findMin(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                    tempMap = []
+                    temp = []
+                    tempMap =(simulateMove(map, i[0], i[1], i[0], i[1] + 1))
+                   
+                    temp =(findMin(tempMap[0],  depth + 1, alpha, beta))
                     if temp[0] > alpha:
                         alpha = temp[0]
                     if temp[0] > value:
                         value = temp[0]
-                        retMap = list(tempMap[0][0])
+                        retMap =(tempMap[0])
                     if alpha > beta:
                         return [value, retMap]
                     tempPieces = list(pieces)
-                tempMap = []
+
                 if testIfPossible(map, i[0], i[1], i[0], i[1] - 1):
-                    tempMap.append(simulateMove(map, i[0], i[1], i[0], i[1] - 1))
-                    if tempMap[0][1]:
-                        tempPieces.remove(i)
-                    temp = list(findMin(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                    tempMap = []
+                    temp = []
+                    tempMap =(simulateMove(map, i[0], i[1], i[0], i[1] - 1))
+                   
+                    temp =(findMin(tempMap[0],  depth + 1, alpha, beta))
                     if temp[0] > alpha:
                         alpha = temp[0]
                     if temp[0] > value:
                         value = temp[0]
-                        retMap = list(tempMap[0][0])
+                        retMap =(tempMap[0])
                     if alpha > beta:
                         return [value, retMap]
                     tempPieces = list(pieces)
         return [value, retMap]
 
 
-def findMin(map, pieces, depth, alpha, beta):
+def findMin(map,  depth, alpha, beta):
+    pieces = getAIPieces(map)
     value = math.inf
     tempPieces = list(pieces)
     retMap = []
@@ -91,57 +92,57 @@ def findMin(map, pieces, depth, alpha, beta):
             tempMap = []
             temp =[]
             if testIfPossible(map, i[0], i[1], i[0] + 1, i[1]):
-                tempMap.append(simulateMove(map, i[0], i[1], i[0] + 1, i[1]))
-                if tempMap[0][1]:
-                    tempPieces.remove(i)
-                temp = list(findMax(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                tempMap = simulateMove(map, i[0], i[1], i[0] + 1, i[1])
+               
+                temp = findMax(tempMap[0],  depth + 1, alpha, beta)
                 if temp[0] < beta:
                     beta = temp[0]
                 if temp[0] < value:
                     value = temp[0]
-                    retMap = list(tempMap[0][0])
+                    retMap =(tempMap[0])
                 if alpha > beta:
                     return [value, retMap]
                 tempPieces = list(pieces)
-            tempMap = []
             if testIfPossible(map, i[0], i[1], i[0] - 1, i[1]):
-                tempMap.append(simulateMove(map, i[0], i[1], i[0] - 1, i[1]))
-                if tempMap[0][1]:
-                    tempPieces.remove(i)
-                temp = list(findMax(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                tempMap = []
+                temp = []
+                tempMap = simulateMove(map, i[0], i[1], i[0] - 1, i[1])
+               
+                temp =(findMax(tempMap[0],  depth + 1, alpha, beta))
                 if temp[0] < beta:
                     beta = temp[0]
                 if temp[0] < value:
                     value = temp[0]
-                    retMap = list(tempMap[0][0])
+                    retMap =(tempMap[0])
                 if alpha > beta:
                     return [value, retMap]
                 tempPieces = list(pieces)
-            tempMap = []
             if testIfPossible(map, i[0], i[1], i[0], i[1] + 1):
-                tempMap.append(simulateMove(map, i[0], i[1], i[0], i[1] + 1))
-                if tempMap[0][1]:
+                tempMap = []
+                temp = []
+                tempMap = simulateMove(map, i[0], i[1], i[0], i[1] + 1)
+                if tempMap[1]:
                     tempPieces.remove((i[0],i[1]))
-                temp = list(findMax(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                temp =(findMax(tempMap[0],  depth + 1, alpha, beta))
                 if temp[0] < beta:
                     beta = temp[0]
                 if temp[0] < value:
                     value = temp[0]
-                    retMap = list(tempMap[0][0])
+                    retMap =(tempMap[0])
                 if alpha > beta:
                     return [value, retMap]
                 tempPieces = list(pieces)
-            tempMap = []
             if testIfPossible(map, i[0], i[1], i[0], i[1] - 1):
-                tempMap.append(simulateMove(map, i[0], i[1], i[0], i[1] - 1))
-                if tempMap[0][1]:
-                    tempPieces.remove(i)
-                temp = list(findMax(tempMap[0][0], pieces, depth + 1, alpha, beta))
+                tempMap = []
+                temp = []
+                tempMap =(simulateMove(map, i[0], i[1], i[0], i[1] - 1))
+               
+                temp =(findMax(tempMap[0],  depth + 1, alpha, beta))
                 if temp[0] < beta:
                     beta = temp[0]
                 if temp[0] > value:
                     value = temp[0]
-                    retMap = list(tempMap[0][0])
+                    retMap =(tempMap[0])
                 if alpha > beta:
                     return [value, retMap]
                 tempPieces = list(pieces)
@@ -160,13 +161,24 @@ def testIfPossible(map, y1, x1, y2, x2):
         return False
 
 
-def simulateMove(map, x1, y1, x2, y2):
-    if map[x2][y2] == 0:
-        return moveOnToGrass(map, x1, y1, x2, y2)
-    elif map[x2][y2] == 7:
-        return moveOnToPit(map, x1, y1, x2, y2)
-    elif map[x2][y2] == 1 or map[x2][y2] == 2 or map[x2][y2] == 3:
-        return combat(map, x1, y1, x2, y2)
+def simulateMove(map, y1, x1, y2, x2):
+    tempMap = []
+    for i in range(len(map)):
+        holder = []
+        for j in range(len(map[i])):
+           holder.append(map[i][j])
+        tempMap.append(holder)
+    if tempMap[y2][x2] == 0:
+        return moveOnToGrass(tempMap, y1, x1, y2, x2)
+    elif tempMap[y2][x2] == 7:
+        return moveOnToPit(tempMap, y1, x1, y2, x2)
+    elif tempMap[y2][x2] == 1 or tempMap[y2][x2] == 2 or tempMap[x2][y2] == 3:
+        return combat(tempMap, y1, x1, y2, x2)
+    else:
+        print("Fucked")
+        print(map)
+        print(map[x1][y1])
+        print(map[x2][y2])
 
 
 # Move/combat methods return map and true/false if true the piece is removed from pieces on return.
@@ -174,7 +186,8 @@ def simulateMove(map, x1, y1, x2, y2):
 def moveOnToGrass(map, x1, y1, x2, y2):
     map[y2][x2] = map[y1][x1]
     map[y1][x1] = 0
-    return [map, False]
+    ret = [map, False]
+    return ret
 
 
 def moveOnToPit(map, x1, y1, x2, y2):
@@ -182,35 +195,40 @@ def moveOnToPit(map, x1, y1, x2, y2):
     return [map, True]
 
 
-def combat(map, x1, y1, x2, y2):
-    if map[x1][y1] == map[x2][y2] - 3:  # Are the pieces the same?
-        map[x1][y1] = 0
-        map[x2][y2] = 0
-        return [map, True]
-    elif map[x1][y1] == 4:  # is the AI piece a hero?
-        if map[x2][y2] == 2:
-            map[x2][y2] = map[x1][y1]
-            map[x1][y1] = 0
+def combat(map, y1, x1, y2, x2):
+    if map[y1][x1] == 0:
+        print("WTF")
+    if map[y1][x1] - 3 == map[y2][x2]:  # Are the pieces the same?
+        map[y1][x1] = 0
+        map[y2][x2] = 0
+        ret = [map, True]
+        return ret
+    elif map[y1][x1] == 4:  # is the AI piece a hero?
+        if map[y2][x2] == 2:
+            map[y2][x2] = map[x1][y1]
+            map[y1][x1] = 0
             return [map, False]
-        elif map[x2][y2] == 3:
-            map[x1][y1] = 0
+        elif map[y2][x2] == 3:
+            map[y1][x1] = 0
             return [map, True]
-    elif map[x1][y1] == 5:  # is the AI piece a Wumpus?
-        if map[x2][y2] == 3:
-            map[x2][y2] = map[x1][y1]
-            map[x1][y1] = 0
+    elif map[y1][x1] == 5:  # is the AI piece a Wumpus?
+        if map[y2][x2] == 3:
+            map[y2][x2] = map[x1][y1]
+            map[y1][x1] = 0
             return [map, False]
-        elif map[x2][y2] == 1:
-            map[x1][y1] = 0
+        elif map[y2][x2] == 1:
+            map[y1][x1] = 0
             return [map, True]
-    elif map[x1][y1] == 5:  # is the AI piece a Wizard?
-        if map[x2][y2] == 1:
-            map[x2][y2] = map[x1][y1]
-            map[x1][y1] = 0
+    elif map[y1][x1] == 6:  # is the AI piece a Wizard?
+        if map[y2][x2] == 1:
+            map[y2][x2] = map[x1][y1]
+            map[y1][x1] = 0
             return [map, False]
-        elif map[x2][y2] == 2:
-            map[x1][y1] = 0
+        elif map[y2][x2] == 2:
+            map[y1][x1] = 0
             return [map, True]
+    else:
+        print("UBER FUCKED")
 
 
 def Evaluate(map):
@@ -223,3 +241,11 @@ def Evaluate(map):
             elif map[i][j] == 4 or map[i][j] == 5 or map[i][j] == 6:
                 aiCount = aiCount + 1
     return playerCount - aiCount
+
+def getAIPieces(map):
+    aiCount = []
+    for i in range(len(map)):
+        for j in range(len(map[i])):
+            if map[i][j] == 4 or map[i][j] == 5 or map[i][j] == 6:
+                aiCount.append((i,j))
+    return aiCount

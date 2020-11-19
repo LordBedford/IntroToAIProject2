@@ -3,6 +3,7 @@
 from tkinter import *
 
 import testminimax
+import minimax
 from PIL import ImageTk as itk, Image
 import MapCreator
 import random
@@ -52,9 +53,11 @@ class MapMaker:
         self.frame = Frame(self.window, width=1000, height=1000)
         self.frame.pack()
         self.startButton = Button(self.frame, text='START GAME!', width=25, command=self.gameSetup)
-        self.startButton.place(x=500, y=500)
+        self.startButton.place(x=400, y=500)
         self.gameSize = Text(self.frame, height=1, width=25)
-        self.gameSize.place(x=500, y=600)
+        self.gameSize.place(x=400, y=700)
+        label = Label(self.frame, text = "Enter in the Game Size then hit start!")
+        label.place(x = 400, y = 650)
 
     def gameSetup(self):
         tempSize = self.gameSize.get("1.0","end")
@@ -68,6 +71,7 @@ class MapMaker:
             self.map = MapCreator.mapGen(self.size)  # Replace with map generator
             self.drawMap()
             self.gameStarted = TRUE
+
         else:
             print("Please enter a valid number")
 
@@ -97,9 +101,9 @@ class MapMaker:
                 selected = self.map[y][x]
                 print(x)
                 print(y)
-                if selected == 1 or selected == 2 or selected == 3:
+                if selected == 4 or selected == 5 or selected == 6:
                     if self.hand[0] == -1 and self.hand[1] == -1:  # activates if your not holding a piece
-                        print("You picked up a", self.pieces[selected - 1])
+                        print("You picked up a", self.pieces[selected - 4])
                         self.hand = (y, x)
                 elif (self.hand != (-1, -1)) and ((1 >= self.hand[0] - y >= -1) and (
                         1 >= self.hand[1] - x >= -1)):
@@ -107,9 +111,10 @@ class MapMaker:
                         self.moveOnToGrass(y, x)
                     elif (selected == 7):
                         self.moveOnToPit(y, x)
-                    elif selected == 4 or selected == 5 or selected == 6:
+                    elif selected == 1 or selected == 2 or selected == 3:
                         self.combat(y, x)
                     self.turn = 1
+                    self.drawMap()
                     self.aiHandler()
                 else:
                     print("Failure")
@@ -131,34 +136,33 @@ class MapMaker:
             self.map[self.hand[0]][self.hand[1]] = 0
             self.hand = (-1, -1)
             self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 1:
-            if self.map[y][x] == 5:
-                self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
-                self.map[self.hand[0]][self.hand[1]] = 0
-                self.hand = (-1, -1)
-                print("Hero kills wumpus")
-                self.drawMap()
-            elif self.map[y][x] == 6:
-                self.map[self.hand[0]][self.hand[1]] = 0
-                self.hand = (-1, -1)
-                self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 2:
-            if self.map[y][x] == 6:
+        elif self.map[self.hand[0]][self.hand[1]] == 4:
+            if self.map[y][x] == 2:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-            elif self.map[y][x] == 4:
+            elif self.map[y][x] == 3:
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-        elif self.map[self.hand[0]][self.hand[1]] == 3:
-            if self.map[y][x] == 4:
+        elif self.map[self.hand[0]][self.hand[1]] == 5:
+            if self.map[y][x] == 3:
                 self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
-            elif self.map[y][x] == 5:
+            elif self.map[y][x] == 1:
+                self.map[self.hand[0]][self.hand[1]] = 0
+                self.hand = (-1, -1)
+                self.drawMap()
+        elif self.map[self.hand[0]][self.hand[1]] == 6:
+            if self.map[y][x] == 1:
+                self.map[y][x] = self.map[self.hand[0]][self.hand[1]]
+                self.map[self.hand[0]][self.hand[1]] = 0
+                self.hand = (-1, -1)
+                self.drawMap()
+            elif self.map[y][x] == 2:
                 self.map[self.hand[0]][self.hand[1]] = 0
                 self.hand = (-1, -1)
                 self.drawMap()
@@ -169,15 +173,14 @@ class MapMaker:
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 if (self.map[i][j] == 1) or (self.map[i][j] == 2) or (self.map[i][j] == 3):
-                    print("YEETS ASDFHHFHH",count[0])
                     count = (count[0] + 1, count[1])
                 elif (self.map[i][j] == 4) or (self.map[i][j] == 5) or (self.map[i][j] == 6):
                     count = (count[0], count[1]+1)
         if count[0] != 0 and count[1] == 0:
-            print("Human Player Wins!")
+            print("AI Player Wins!")
             self.window.destroy()
         elif count[0] == 0 and count[1] != 0:
-            print("AI Player Wins!")
+            print("HUMAN Player Wins!")
             self.window.destroy()
         elif count[0] == 0 and count[1] == 0:
             print("TIE!")
@@ -190,10 +193,10 @@ class MapMaker:
 
     def aiHandler(self):
         temp= []
-        temp = list(testminimax.takeTurn(self.map))
+        temp = list(minimax.GetNextMove(self.map,3,1))
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
-                self.map[i][j] = temp[1][0][0][i][j]
+                self.map[i][j] = temp[i][j]
         print("Making move valued at:", temp[0])
         self.turn = 0
         self.drawMap()
