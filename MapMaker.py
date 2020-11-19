@@ -91,6 +91,7 @@ class MapMaker:
                     #lable.pack()
 
         self.c.pack()
+        self.checkWinner()
 
     def leftHandler(self, event):
         if self.gameStarted and self.turn == 0:
@@ -193,7 +194,7 @@ class MapMaker:
 
     def aiHandler(self):
         temp= []
-        temp = list(minimax.GetNextMove(self.map,3,1))
+        temp = list(minimax.GetNextMove(self.map,2,1))
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 self.map[i][j] = temp[i][j]
